@@ -1,0 +1,10 @@
+{
+    "fetcher": {
+        "type": "ZipFetcher",
+        "url": "https://github.com/devopsspiral/rf-service/archive/master.zip"
+    },
+    "publisher": {
+        "type": "CaddyPublisher",
+        "url": "http://rf-service-caddy/uploads"
+    }
+  }

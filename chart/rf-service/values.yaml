@@ -1,0 +1,112 @@
+# Default values for rf-service.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+rfService:
+  image:
+    repository: mwcislo/rf-service-k8s
+    version: 0.2.0
+    pullPolicy: IfNotPresent
+rfFE:
+  image:
+    repository: mwcislo/rf-service-fe
+    version: 0.1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 80
+schedule: "*/1 * * * *"
+storageSize: 1Gi
+config: ""
+# config: |
+#   {
+#     "fetcher": {
+#         "type": "ZipFetcher",
+#         "url": "https://github.com/devopsspiral/KubeLibrary/archive/incluster.zip"
+#     },
+#     "publisher": {
+#         "type": "CaddyPublisher",
+#         "url": "http://rf-service:8090/uploads"
+#     }
+#   }
+#Extra env vars for test job
+#extraEnv:
+#  - name: https_proxy
+#    value: http://10.11.12.13:8080/
+
+
+caddy:
+  image:
+    repository: jumanjiman/caddy
+    version: v1.0.0-20190503T1915-git-b0fca0c
+    pullPolicy: IfNotPresent
+  setup: |
+    # Bind address
+    :8090
+
+    tls off
+    log stdout
+    errors stderr
+
+    # After this line, all other paths are relative to root.
+    root /tmp/store
+    browse /
+
+    rewrite /caddy/ {
+      to /{file} /
+    }
+    upload /uploads {
+      to "/tmp/store"
+    }
+
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+bindToClusterRole: cluster-admin
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+
+
+ingress:
+  enabled: true
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: rf-service.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

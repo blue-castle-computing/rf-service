@@ -1,0 +1,8 @@
+.venv
+.vscode
+
+*.pyc
+*.pyo
+src/rf_service.egg-info/
+dist/
+build/
